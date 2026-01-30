@@ -3,6 +3,30 @@
 <head>
 <title>ODI Predictor</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script>
+function updateToss() {
+    let team1 = document.getElementById("team1").value;
+    let team2 = document.getElementById("team2").value;
+    let toss = document.getElementById("toss_winner");
+
+    // Clear old options
+    toss.innerHTML = "";
+
+    // Add Team 1
+    let opt1 = document.createElement("option");
+    opt1.text = team1;
+    opt1.value = team1;
+    toss.add(opt1);
+
+    // Add Team 2
+    let opt2 = document.createElement("option");
+    opt2.text = team2;
+    opt2.value = team2;
+    toss.add(opt2);
+}
+</script>
+
 </head>
 
 <body>
@@ -12,45 +36,48 @@
 
 <form action="/predict" method="post">
 
+<!-- TEAM 1 -->
 Team 1:
-<select name="team1">
+<select id="team1" name="team1" onchange="updateToss()">
 {% for t in teams %}
-<option value="{{t}}">{{t}}</option>
+<option>{{t}}</option>
 {% endfor %}
 </select>
 
+<!-- TEAM 2 -->
 Team 2:
-<select name="team2">
+<select id="team2" name="team2" onchange="updateToss()">
 {% for t in teams %}
-<option value="{{t}}">{{t}}</option>
+<option>{{t}}</option>
 {% endfor %}
 </select>
 
+<!-- VENUE -->
 Venue:
 <select name="venue">
 {% for v in venues %}
-<option value="{{v}}">{{v}}</option>
+<option>{{v}}</option>
 {% endfor %}
 </select>
 
+<!-- SEASON -->
 Season:
 <select name="season">
-{% for s in seasons %}
-<option value="{{s}}">{{s}}</option>
-{% endfor %}
+<option>Summer</option>
+<option>Rainy</option>
+<option>Winter</option>
 </select>
 
+<!-- TOSS WINNER (AUTO) -->
 Toss Winner:
-<select name="toss_winner">
-{% for t in teams %}
-<option value="{{t}}">{{t}}</option>
-{% endfor %}
+<select id="toss_winner" name="toss_winner">
 </select>
 
+<!-- TOSS DECISION -->
 Toss Decision:
 <select name="toss_decision">
-<option value="bat">Bat</option>
-<option value="field">Field</option>
+<option>bat</option>
+<option>field</option>
 </select>
 
 <button type="submit">Predict Winner</button>
@@ -58,5 +85,11 @@ Toss Decision:
 </form>
 
 </div>
+
+<!-- Auto load toss teams on page load -->
+<script>
+updateToss();
+</script>
+
 </body>
 </html>
