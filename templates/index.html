@@ -15,41 +15,42 @@
 Team 1:
 <select name="team1">
 {% for t in teams %}
-<option>{{t}}</option>
+<option value="{{t}}">{{t}}</option>
 {% endfor %}
 </select>
 
 Team 2:
 <select name="team2">
 {% for t in teams %}
-<option>{{t}}</option>
+<option value="{{t}}">{{t}}</option>
 {% endfor %}
 </select>
 
 Venue:
 <select name="venue">
 {% for v in venues %}
-<option>{{v}}</option>
+<option value="{{v}}">{{v}}</option>
 {% endfor %}
 </select>
 
 Season:
 <select name="season">
-<option>Summer</option>
-<option>Rainy</option>
-<option>Winter</option>
+{% for s in seasons %}
+<option value="{{s}}">{{s}}</option>
+{% endfor %}
 </select>
 
 Toss Winner:
 <select name="toss_winner">
-<option>Team 1</option>
-<option>Team 2</option>
+{% for t in teams %}
+<option value="{{t}}">{{t}}</option>
+{% endfor %}
 </select>
 
 Toss Decision:
 <select name="toss_decision">
-<option>bat</option>
-<option>field</option>
+<option value="bat">Bat</option>
+<option value="field">Field</option>
 </select>
 
 <button type="submit">Predict Winner</button>
