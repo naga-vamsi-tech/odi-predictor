@@ -10,8 +10,8 @@ app = Flask(__name__)
 
 MODEL_URL = "https://drive.google.com/uc?id=1ihaLp2BxbbFu_HbvwcGV0I-4UmkisyfH"
 
-# Download model if not exists
-if not os.path.exists("model.pkl"):
+# Download model.pkl if not exists
+if not os.path.exists("model(1).pkl"):
     print("Downloading model from Google Drive...")
     gdown.download(MODEL_URL, "model.pkl", quiet=False)
 
