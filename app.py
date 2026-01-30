@@ -1,83 +1,54 @@
 from flask import Flask, render_template, request
-import joblib
+import pandas as pd
+import pickle
 import os
 import gdown
-import csv
 
 app = Flask(__name__)
 
-# ================= DOWNLOAD MODEL FROM GOOGLE DRIVE =================
-
+# Google Drive model link
 MODEL_URL = "https://drive.google.com/uc?id=1ihaLp2BxbbFu_HbvwcGV0I-4UmkisyfH"
 
-if not os.path.exists("model.pkl"):
+# Download model if not exists
+if not os.path.exists("model(1).pkl"):
     print("Downloading model from Google Drive...")
     gdown.download(MODEL_URL, "model.pkl", quiet=False)
 
 # Load model
-model = joblib.load("model.pkl")
+model = pickle.load(open("model.pkl", "rb"))
 
-# ================= LOAD CSV WITHOUT PANDAS =================
-
-known_teams = set()
-known_venues = set()
-
-with open("ODI_Match_info.csv", encoding="utf-8") as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        known_teams.add(row["team1"])
-        known_teams.add(row["team2"])
-        known_venues.add(row["venue"])
-
-known_teams = sorted(list(known_teams))
-known_venues = sorted(list(known_venues))
-
-# ================= ROUTES =================
+# Load CSV dataset
+df = pd.read_csv("ODI_Match_info.csv")
 
 @app.route("/")
-def home():
-    return render_template("index.html", teams=known_teams, venues=known_venues)
+def index():
+    teams = sorted(df["team1"].unique())
+    venues = sorted(df["venue"].unique())
+    seasons = sorted(df["season"].unique())
+    return render_template("index.html", teams=teams, venues=venues, seasons=seasons)
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    team1 = request.form["team1"]
-    team2 = request.form["team2"]
-    venue = request.form["venue"]
-    toss_winner = request.form["toss_winner"]
-    toss_decision = request.form["toss_decision"]
-    season_type = request.form["season_type"]
+    try:
+        team1 = request.form["team1"]
+        team2 = request.form["team2"]
+        venue = request.form["venue"]
+        toss_winner = request.form["toss_winner"]
+        toss_decision = request.form["toss_decision"]
+        season = int(request.form["season"])
 
-    # Create input dictionary
-    input_data = {
-        "team1": team1,
-        "team2": team2,
-        "venue": venue,
-        "toss_winner": toss_winner,
-        "toss_decision": toss_decision,
-        "season_type": season_type,
-        "dl_applied": 0,
-        "team1_strength": 0.5,
-        "team2_strength": 0.5,
-        "team1_bat_strength": 1.0,
-        "team2_bat_strength": 1.0,
-        "team1_bowl_strength": 1.0,
-        "team2_bowl_strength": 1.0,
-        "venue_strength": 0.5
-    }
+        input_data = pd.DataFrame([[team1, team2, venue, toss_winner, toss_decision, season]],
+                                  columns=["team1", "team2", "venue", "toss_winner", "toss_decision", "season"])
 
-    # sklearn needs list of dict
-    input_data = [input_data]
+        proba = model.predict_proba(input_data)[0]
+        winner = team1 if proba[0] > proba[1] else team2
+        confidence = max(proba) * 100
 
-    proba = model.predict_proba(input_data)[0]
+        return render_template("result.html", winner=winner, confidence=round(confidence, 2))
 
-    return render_template("result.html",
-                           team1=team1,
-                           team2=team2,
-                           prob1=round(proba[0]*100, 2),
-                           prob2=round(proba[1]*100, 2))
+    except Exception as e:
+        return f"ERROR: {str(e)}"
 
-
-# ================= RUN APP =================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
