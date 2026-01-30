@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="container">
+
+<h2>🏆 Predicted Winner: {{ winner }}</h2>
+<h3>Winning Probability: {{ prob }}%</h3>
+
+<p>Team 1: {{ team1 }}</p>
+<p>Team 2: {{ team2 }}</p>
+<p>Venue: {{ venue }}</p>
+<p>Season: {{ season }}</p>
+<p>Toss Winner: {{ toss_winner }}</p>
+<p>Toss Decision: {{ toss_decision }}</p>
+
+<a href="/">Go Back</a>
+
+</div>
+</body>
+</html>
