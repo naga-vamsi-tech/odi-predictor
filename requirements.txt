@@ -1,6 +1,6 @@
 flask
-pandas
+pandas==2.2.2
 joblib
-scikit-learn
+scikit-learn==1.7.2
 gdown
 gunicorn
