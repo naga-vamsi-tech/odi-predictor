@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ODI Predictor</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="container">
+
+<h2>🏏 ODI Match Winner Prediction</h2>
+
+<form action="/predict" method="post">
+
+Team 1:
+<select name="team1">
+{% for t in teams %}
+<option>{{t}}</option>
+{% endfor %}
+</select>
+
+Team 2:
+<select name="team2">
+{% for t in teams %}
+<option>{{t}}</option>
+{% endfor %}
+</select>
+
+Venue:
+<select name="venue">
+{% for v in venues %}
+<option>{{v}}</option>
+{% endfor %}
+</select>
+
+Season:
+<select name="season">
+<option>Summer</option>
+<option>Rainy</option>
+<option>Winter</option>
+</select>
+
+Toss Winner:
+<select name="toss_winner">
+<option>Team 1</option>
+<option>Team 2</option>
+</select>
+
+Toss Decision:
+<select name="toss_decision">
+<option>bat</option>
+<option>field</option>
+</select>
+
+<button type="submit">Predict Winner</button>
+
+</form>
+
+</div>
+</body>
+</html>
