@@ -1,92 +1,83 @@
+from flask import Flask, render_template, request
+import joblib
 import os
 import gdown
-from flask import Flask, render_template, request
-import pandas as pd
-import joblib
+import csv
 
 app = Flask(__name__)
 
-# ================= GOOGLE DRIVE MODEL DOWNLOAD =================
+# ================= DOWNLOAD MODEL FROM GOOGLE DRIVE =================
 
 MODEL_URL = "https://drive.google.com/uc?id=1ihaLp2BxbbFu_HbvwcGV0I-4UmkisyfH"
 
-# Download model.pkl if not exists
-if not os.path.exists("model(1).pkl"):
+if not os.path.exists("model.pkl"):
     print("Downloading model from Google Drive...")
     gdown.download(MODEL_URL, "model.pkl", quiet=False)
 
 # Load model
 model = joblib.load("model.pkl")
 
-# ================= LOAD DATA =================
+# ================= LOAD CSV WITHOUT PANDAS =================
 
-match_info = pd.read_csv("ODI_Match_info.csv")
-teams = sorted(set(match_info['team1']).union(set(match_info['team2'])))
-venues = sorted(match_info['venue'].dropna().unique())
+known_teams = set()
+known_venues = set()
 
-# ================= HOME PAGE =================
+with open("ODI_Match_info.csv", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        known_teams.add(row["team1"])
+        known_teams.add(row["team2"])
+        known_venues.add(row["venue"])
+
+known_teams = sorted(list(known_teams))
+known_venues = sorted(list(known_venues))
+
+# ================= ROUTES =================
 
 @app.route("/")
 def home():
-    return render_template("index.html", teams=teams, venues=venues)
-
-# ================= PREDICT =================
+    return render_template("index.html", teams=known_teams, venues=known_venues)
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    team1 = request.form.get("team1")
-    team2 = request.form.get("team2")
-    venue = request.form.get("venue")
-    season = request.form.get("season")
-    toss_winner = request.form.get("toss_winner")
-    toss_decision = request.form.get("toss_decision")
+    team1 = request.form["team1"]
+    team2 = request.form["team2"]
+    venue = request.form["venue"]
+    toss_winner = request.form["toss_winner"]
+    toss_decision = request.form["toss_decision"]
+    season_type = request.form["season_type"]
 
-    # Same team error
-    if team1 == team2:
-        return "<h2 style='color:red;'>❌ Team 1 and Team 2 cannot be same!</h2>"
+    # Create input dictionary
+    input_data = {
+        "team1": team1,
+        "team2": team2,
+        "venue": venue,
+        "toss_winner": toss_winner,
+        "toss_decision": toss_decision,
+        "season_type": season_type,
+        "dl_applied": 0,
+        "team1_strength": 0.5,
+        "team2_strength": 0.5,
+        "team1_bat_strength": 1.0,
+        "team2_bat_strength": 1.0,
+        "team1_bowl_strength": 1.0,
+        "team2_bowl_strength": 1.0,
+        "venue_strength": 0.5
+    }
 
-    # Create input data
-    input_data = pd.DataFrame({
-        'team1':[team1],
-        'team2':[team2],
-        'venue':[venue],
-        'toss_winner':[toss_winner],
-        'toss_decision':[toss_decision],
-        'season_type':[season],
-        'dl_applied':[0],
-        'team1_strength':[0.5],
-        'team2_strength':[0.5],
-        'team1_bat_strength':[1],
-        'team2_bat_strength':[1],
-        'team1_bowl_strength':[1],
-        'team2_bowl_strength':[1],
-        'venue_strength':[0.5]
-    })
+    # sklearn needs list of dict
+    input_data = [input_data]
 
-    # Predict
     proba = model.predict_proba(input_data)[0]
-    classes = model.classes_
-
-    team_probs = {}
-    for t, p in zip(classes, proba):
-        if t == team1 or t == team2:
-            team_probs[t] = p
-
-    winner = max(team_probs, key=team_probs.get)
-    prob = round(team_probs[winner] * 100, 2)
 
     return render_template("result.html",
-                           winner=winner,
-                           prob=prob,
                            team1=team1,
                            team2=team2,
-                           venue=venue,
-                           season=season,
-                           toss_winner=toss_winner,
-                           toss_decision=toss_decision)
+                           prob1=round(proba[0]*100, 2),
+                           prob2=round(proba[1]*100, 2))
 
-# ================= RUN FOR RENDER =================
 
+# ================= RUN APP =================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
