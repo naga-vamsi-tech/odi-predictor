@@ -10,23 +10,19 @@ function updateToss() {
     let team2 = document.getElementById("team2").value;
     let toss = document.getElementById("toss_winner");
 
-    // Clear old options
     toss.innerHTML = "";
 
-    // Add Team 1
     let opt1 = document.createElement("option");
     opt1.text = team1;
     opt1.value = team1;
     toss.add(opt1);
 
-    // Add Team 2
     let opt2 = document.createElement("option");
     opt2.text = team2;
     opt2.value = team2;
     toss.add(opt2);
 }
 </script>
-
 </head>
 
 <body>
@@ -36,57 +32,49 @@ function updateToss() {
 
 <form action="/predict" method="post">
 
-<!-- TEAM 1 -->
-Team 1:
-<select id="team1" name="team1" onchange="updateToss()">
+<label>Team 1</label>
+<select id="team1" name="team1" onchange="updateToss()" required>
 {% for t in teams %}
-<option>{{t}}</option>
+<option>{{ t }}</option>
 {% endfor %}
 </select>
 
-<!-- TEAM 2 -->
-Team 2:
-<select id="team2" name="team2" onchange="updateToss()">
+<label>Team 2</label>
+<select id="team2" name="team2" onchange="updateToss()" required>
 {% for t in teams %}
-<option>{{t}}</option>
+<option>{{ t }}</option>
 {% endfor %}
 </select>
 
-<!-- VENUE -->
-Venue:
-<select name="venue">
+<label>Venue</label>
+<select name="venue" required>
 {% for v in venues %}
-<option>{{v}}</option>
+<option>{{ v }}</option>
 {% endfor %}
 </select>
 
-<!-- SEASON -->
-Season:
-<select name="season">
-<option>Summer</option>
-<option>Rainy</option>
-<option>Winter</option>
+<label>Season</label>
+<select name="season" required>
+{% for s in seasons %}
+<option>{{ s }}</option>
+{% endfor %}
 </select>
 
-<!-- TOSS WINNER (AUTO) -->
-Toss Winner:
-<select id="toss_winner" name="toss_winner">
+<label>Toss Winner</label>
+<select id="toss_winner" name="toss_winner" required></select>
+
+<label>Toss Decision</label>
+<select name="toss_decision" required>
+<option value="bat">Bat</option>
+<option value="field">Field</option>
 </select>
 
-<!-- TOSS DECISION -->
-Toss Decision:
-<select name="toss_decision">
-<option>bat</option>
-<option>field</option>
-</select>
-
-<button type="submit">Predict Winner</button>
+<button type="submit">🔮 Predict Winner</button>
 
 </form>
 
 </div>
 
-<!-- Auto load toss teams on page load -->
 <script>
 updateToss();
 </script>
