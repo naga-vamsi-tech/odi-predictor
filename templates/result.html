@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Prediction Result</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 <div class="container">
 
-<h2>🏆 Predicted Winner: {{ winner }}</h2>
-<h3>Confidence: {{ confidence }}%</h3>
+<h2>🏆 Predicted Winner</h2>
 
-<p>Team 1: {{ team1 }}</p>
-<p>Team 2: {{ team2 }}</p>
-<p>Venue: {{ venue }}</p>
-<p>Season: {{ season }}</p>
-<p>Toss Winner: {{ toss_winner }}</p>
-<p>Toss Decision: {{ toss_decision }}</p>
+<div class="result-box winner">
+<h3>{{ winner }}</h3>
+<p>Winning Probability: <b>{{ winner_prob }}%</b></p>
+</div>
 
-<a href="/">Go Back</a>
+<div class="result-box loser">
+<p>Expected Losing Team: <b>{{ loser }}</b></p>
+<p>Losing Probability: <b>{{ loser_prob }}%</b></p>
+</div>
+
+<hr>
+
+<h3>🧠 Why this team is predicted to win?</h3>
+<p>{{ explanation }}</p>
+
+<hr>
+
+<h3>📋 Match Details</h3>
+<p><b>Team 1:</b> {{ team1 }}</p>
+<p><b>Team 2:</b> {{ team2 }}</p>
+<p><b>Venue:</b> {{ venue }}</p>
+<p><b>Season:</b> {{ season }}</p>
+<p><b>Toss Winner:</b> {{ toss_winner }}</p>
+<p><b>Toss Decision:</b> {{ toss_decision }}</p>
+
+<a href="/" class="back-btn">🔁 Predict Another Match</a>
 
 </div>
 </body>
