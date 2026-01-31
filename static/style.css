@@ -1,29 +1,69 @@
 body {
     background: #0f172a;
-    color: white;
-    font-family: Arial;
-    text-align: center;
-    padding-top: 40px;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     background: #1e293b;
+    width: 360px;
+    margin: 40px auto;
     padding: 20px;
-    width: 350px;
-    margin: auto;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px black;
+    border-radius: 12px;
+    box-shadow: 0px 0px 15px #000;
+}
+
+h2, h3 {
+    text-align: center;
+}
+
+label {
+    margin-top: 10px;
+    display: block;
+    font-weight: bold;
 }
 
 select, button {
     width: 100%;
-    padding: 8px;
-    margin: 6px 0;
-    border-radius: 5px;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
     border: none;
+    font-size: 14px;
 }
 
 button {
-    background: orange;
+    margin-top: 15px;
+    background: #f97316;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #fb923c;
+}
+
+.result-box {
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.winner {
+    background: #14532d;
+}
+
+.loser {
+    background: #7f1d1d;
+}
+
+.back-btn {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    color: #38bdf8;
+    text-decoration: none;
     font-weight: bold;
 }
